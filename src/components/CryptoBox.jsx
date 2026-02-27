@@ -1,0 +1,201 @@
+import { useState, useCallback } from 'react';
+import { encryptText, decryptText } from '../utils/crypto';
+
+export default function CryptoBox() {
+  const [inputText, setInputText] = useState('');
+  const [password, setPassword] = useState('');
+  const [outputText, setOutputText] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [toast, setToast] = useState(null);
+
+  const showToast = useCallback((message, type = 'success') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 2500);
+  }, []);
+
+  const handleEncrypt = async () => {
+    if (!inputText.trim()) {
+      showToast('Inserisci del testo da criptare', 'error');
+      return;
+    }
+    if (!password) {
+      showToast('Inserisci una password', 'error');
+      return;
+    }
+    setLoading(true);
+    try {
+      const result = await encryptText(inputText, password);
+      setOutputText(result);
+      showToast('Testo criptato con successo!');
+    } catch {
+      showToast('Errore durante la crittografia', 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDecrypt = async () => {
+    if (!inputText.trim()) {
+      showToast('Inserisci del testo da decriptare', 'error');
+      return;
+    }
+    if (!password) {
+      showToast('Inserisci una password', 'error');
+      return;
+    }
+    setLoading(true);
+    try {
+      const result = await decryptText(inputText, password);
+      setOutputText(result);
+      showToast('Testo decriptato con successo!');
+    } catch {
+      showToast('Password errata o testo non valido', 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handlePaste = async () => {
+    try {
+      const text = await navigator.clipboard.readText();
+      setInputText(text);
+      showToast('Testo incollato!');
+    } catch {
+      showToast('Impossibile accedere agli appunti', 'error');
+    }
+  };
+
+  const handleCopy = async () => {
+    if (!outputText) {
+      showToast('Nessun risultato da copiare', 'error');
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(outputText);
+      showToast('Copiato negli appunti!');
+    } catch {
+      showToast('Impossibile copiare', 'error');
+    }
+  };
+
+  const handleClear = () => {
+    setInputText('');
+    setPassword('');
+    setOutputText('');
+  };
+
+  return (
+    <div className="crypto-box">
+      {/* Input Section */}
+      <div className="field-group">
+        <div className="field-header">
+          <label htmlFor="input-text">Testo</label>
+          <button className="btn-icon" onClick={handlePaste} title="Incolla">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
+              <rect x="8" y="2" width="8" height="4" rx="1" ry="1"/>
+            </svg>
+            Incolla
+          </button>
+        </div>
+        <textarea
+          id="input-text"
+          placeholder="Inserisci il testo da criptare o decriptare..."
+          value={inputText}
+          onChange={(e) => setInputText(e.target.value)}
+          rows={6}
+        />
+      </div>
+
+      {/* Password Section */}
+      <div className="field-group">
+        <label htmlFor="password">Password</label>
+        <div className="password-wrapper">
+          <input
+            id="password"
+            type={showPassword ? 'text' : 'password'}
+            placeholder="Inserisci la password..."
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <button
+            className="btn-icon btn-toggle-pw"
+            onClick={() => setShowPassword(!showPassword)}
+            title={showPassword ? 'Nascondi' : 'Mostra'}
+            type="button"
+          >
+            {showPassword ? (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                <line x1="1" y1="1" x2="23" y2="23"/>
+                <path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/>
+              </svg>
+            ) : (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+            )}
+          </button>
+        </div>
+      </div>
+
+      {/* Action Buttons */}
+      <div className="actions">
+        <button className="btn btn-encrypt" onClick={handleEncrypt} disabled={loading}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+          {loading ? 'Elaborazione...' : 'Cripta'}
+        </button>
+        <button className="btn btn-decrypt" onClick={handleDecrypt} disabled={loading}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0 1 9.9-1"/>
+          </svg>
+          {loading ? 'Elaborazione...' : 'Decripta'}
+        </button>
+        <button className="btn btn-clear" onClick={handleClear}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M3 6h18"/>
+            <path d="M8 6V4h8v2"/>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/>
+          </svg>
+          Pulisci
+        </button>
+      </div>
+
+      {/* Output Section */}
+      {outputText && (
+        <div className="field-group output-group">
+          <div className="field-header">
+            <label htmlFor="output-text">Risultato</label>
+            <button className="btn-icon" onClick={handleCopy} title="Copia">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+              </svg>
+              Copia
+            </button>
+          </div>
+          <textarea
+            id="output-text"
+            value={outputText}
+            readOnly
+            rows={6}
+          />
+        </div>
+      )}
+
+      {/* Toast */}
+      {toast && (
+        <div className={`toast toast-${toast.type}`}>
+          {toast.message}
+        </div>
+      )}
+    </div>
+  );
+}
