@@ -202,6 +202,17 @@ textarea::placeholder,
   border-color: rgba(108, 99, 255, 0.2);
 }
 
+.output-actions {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+}
+
+/* Desktop: expanded output */
+.output-expanded textarea {
+  min-height: 400px;
+}
+
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
@@ -279,5 +290,37 @@ textarea::placeholder,
 
   .btn-clear {
     flex: 1 1 100%;
+  }
+
+  /* Fullscreen output on mobile */
+  .output-expanded {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 100;
+    background: var(--bg-primary);
+    border-radius: 0;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    padding-top: env(safe-area-inset-top, 1rem);
+    padding-bottom: env(safe-area-inset-bottom, 1rem);
+    margin: 0;
+    box-shadow: none;
+    animation: none;
+  }
+
+  .output-expanded .field-header {
+    flex-shrink: 0;
+    margin-bottom: 0.75rem;
+  }
+
+  .output-expanded textarea {
+    flex: 1;
+    resize: none;
+    min-height: 0;
   }
 }
