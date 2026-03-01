@@ -202,6 +202,63 @@ textarea::placeholder,
   border-color: rgba(108, 99, 255, 0.2);
 }
 
+.output-field-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* Fullscreen overlay */
+.fullscreen-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: var(--bg-primary);
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+}
+
+.fullscreen-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.fullscreen-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.fullscreen-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.fullscreen-textarea {
+  flex: 1;
+  resize: none !important;
+  background: rgba(108, 99, 255, 0.05);
+  border-color: rgba(108, 99, 255, 0.2);
+  line-height: 1.6;
+}
+
+.btn-close-fullscreen {
+  color: var(--text-secondary);
+}
+
+.btn-close-fullscreen:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.05) !important;
+}
+
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
