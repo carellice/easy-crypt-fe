@@ -8,6 +8,12 @@
   Cripta e decripta testo in modo semplice e sicuro, direttamente nel browser.
 </p>
 
+<p align="center">
+  <a href="https://easycrypt.netlify.app/">
+    <img src="https://img.shields.io/badge/Apri%20Easy%20Crypt-00C7B7?style=for-the-badge&logo=netlify&logoColor=white" alt="Apri Easy Crypt" />
+  </a>
+</p>
+
 ---
 
 ## Cos'è
