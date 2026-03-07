@@ -1,7 +1,9 @@
 import { useState, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { encryptText, decryptText } from '../utils/crypto';
 
 export default function CryptoBox() {
+  const { t } = useTranslation();
   const [inputText, setInputText] = useState('');
   const [password, setPassword] = useState('');
   const [outputText, setOutputText] = useState('');
@@ -17,20 +19,20 @@ export default function CryptoBox() {
 
   const handleEncrypt = async () => {
     if (!inputText.trim()) {
-      showToast('Inserisci del testo da criptare', 'error');
+      showToast(t('toast.encryptEmpty'), 'error');
       return;
     }
     if (!password) {
-      showToast('Inserisci una password', 'error');
+      showToast(t('toast.passwordEmpty'), 'error');
       return;
     }
     setLoading(true);
     try {
       const result = await encryptText(inputText, password);
       setOutputText(result);
-      showToast('Testo criptato con successo!');
+      showToast(t('toast.encryptSuccess'));
     } catch {
-      showToast('Errore durante la crittografia', 'error');
+      showToast(t('toast.encryptError'), 'error');
     } finally {
       setLoading(false);
     }
@@ -38,20 +40,20 @@ export default function CryptoBox() {
 
   const handleDecrypt = async () => {
     if (!inputText.trim()) {
-      showToast('Inserisci del testo da decriptare', 'error');
+      showToast(t('toast.decryptEmpty'), 'error');
       return;
     }
     if (!password) {
-      showToast('Inserisci una password', 'error');
+      showToast(t('toast.passwordEmpty'), 'error');
       return;
     }
     setLoading(true);
     try {
       const result = await decryptText(inputText, password);
       setOutputText(result);
-      showToast('Testo decriptato con successo!');
+      showToast(t('toast.decryptSuccess'));
     } catch {
-      showToast('Password errata o testo non valido', 'error');
+      showToast(t('toast.decryptError'), 'error');
     } finally {
       setLoading(false);
     }
@@ -61,22 +63,22 @@ export default function CryptoBox() {
     try {
       const text = await navigator.clipboard.readText();
       setInputText(text);
-      showToast('Testo incollato!');
+      showToast(t('toast.pasteSuccess'));
     } catch {
-      showToast('Impossibile accedere agli appunti', 'error');
+      showToast(t('toast.pasteError'), 'error');
     }
   };
 
   const handleCopy = async () => {
     if (!outputText) {
-      showToast('Nessun risultato da copiare', 'error');
+      showToast(t('toast.copyEmpty'), 'error');
       return;
     }
     try {
       await navigator.clipboard.writeText(outputText);
-      showToast('Copiato negli appunti!');
+      showToast(t('toast.copySuccess'));
     } catch {
-      showToast('Impossibile copiare', 'error');
+      showToast(t('toast.copyError'), 'error');
     }
   };
 
@@ -91,18 +93,18 @@ export default function CryptoBox() {
       {/* Input Section */}
       <div className="field-group">
         <div className="field-header">
-          <label htmlFor="input-text">Testo</label>
-          <button className="btn-icon" onClick={handlePaste} title="Incolla">
+          <label htmlFor="input-text">{t('crypto.textLabel')}</label>
+          <button className="btn-icon" onClick={handlePaste} title={t('crypto.paste')}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
               <rect x="8" y="2" width="8" height="4" rx="1" ry="1"/>
             </svg>
-            Incolla
+            {t('crypto.paste')}
           </button>
         </div>
         <textarea
           id="input-text"
-          placeholder="Inserisci il testo da criptare o decriptare..."
+          placeholder={t('crypto.inputPlaceholder')}
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
           rows={6}
@@ -111,19 +113,19 @@ export default function CryptoBox() {
 
       {/* Password Section */}
       <div className="field-group">
-        <label htmlFor="password">Password</label>
+        <label htmlFor="password">{t('crypto.passwordLabel')}</label>
         <div className="password-wrapper">
           <input
             id="password"
             type={showPassword ? 'text' : 'password'}
-            placeholder="Inserisci la password..."
+            placeholder={t('crypto.passwordPlaceholder')}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
           <button
             className="btn-icon btn-toggle-pw"
             onClick={() => setShowPassword(!showPassword)}
-            title={showPassword ? 'Nascondi' : 'Mostra'}
+            title={showPassword ? t('crypto.hide') : t('crypto.show')}
             type="button"
           >
             {showPassword ? (
@@ -150,14 +152,14 @@ export default function CryptoBox() {
             <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
             <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
           </svg>
-          {loading ? 'Elaborazione...' : 'Cripta'}
+          {loading ? t('crypto.processing') : t('crypto.encrypt')}
         </button>
         <button className="btn btn-decrypt" onClick={handleDecrypt} disabled={loading}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
             <path d="M7 11V7a5 5 0 0 1 9.9-1"/>
           </svg>
-          {loading ? 'Elaborazione...' : 'Decripta'}
+          {loading ? t('crypto.processing') : t('crypto.decrypt')}
         </button>
         <button className="btn btn-clear" onClick={handleClear}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -165,7 +167,7 @@ export default function CryptoBox() {
             <path d="M8 6V4h8v2"/>
             <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/>
           </svg>
-          Pulisci
+          {t('crypto.clear')}
         </button>
       </div>
 
@@ -173,9 +175,9 @@ export default function CryptoBox() {
       {outputText && (
         <div className={`field-group output-group${outputExpanded ? ' output-expanded' : ''}`}>
           <div className="field-header">
-            <label htmlFor="output-text">Risultato</label>
+            <label htmlFor="output-text">{t('crypto.resultLabel')}</label>
             <div className="output-actions">
-              <button className="btn-icon" onClick={() => setOutputExpanded(!outputExpanded)} title={outputExpanded ? "Riduci" : "Espandi"}>
+              <button className="btn-icon" onClick={() => setOutputExpanded(!outputExpanded)} title={outputExpanded ? t('crypto.collapse') : t('crypto.expand')}>
                 {outputExpanded ? (
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <polyline points="4 14 10 14 10 20"/>
@@ -191,14 +193,14 @@ export default function CryptoBox() {
                     <line x1="3" y1="21" x2="10" y2="14"/>
                   </svg>
                 )}
-                {outputExpanded ? 'Riduci' : 'Espandi'}
+                {outputExpanded ? t('crypto.collapse') : t('crypto.expand')}
               </button>
-              <button className="btn-icon" onClick={handleCopy} title="Copia">
+              <button className="btn-icon" onClick={handleCopy} title={t('crypto.copy')}>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
                   <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
                 </svg>
-                Copia
+                {t('crypto.copy')}
               </button>
             </div>
           </div>

@@ -1,4 +1,12 @@
 <p align="center">
+  <a href="README.md">Italiano</a> |
+  <a href="README.en.md">English</a> |
+  <a href="README.fr.md">Fran&ccedil;ais</a> |
+  <a href="README.es.md">Espa&ntilde;ol</a> |
+  <a href="README.de.md">Deutsch</a>
+</p>
+
+<p align="center">
   <img src="public/logo.svg" alt="Easy Crypt" width="120" />
 </p>
 
